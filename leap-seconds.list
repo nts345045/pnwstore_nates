@@ -204,10 +204,10 @@
 #	current -- the update time stamp, the data and the name of the file
 #	will not change.
 #
-#	Updated through IERS Bulletin C63
-#	File expires on:  28 December 2022
+#	Updated through IERS Bulletin C69
+#	File expires on:  06 December 2025
 #
-#@	3881174400
+#@	3973968000
 #
 2272060800	10	# 1 Jan 1972
 2287785600	11	# 1 Jul 1972
