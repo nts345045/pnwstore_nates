@@ -17,7 +17,6 @@ classifiers = [
 dependencies = [
     "obspy",
     "pandas",
-    "sqlite",
     "mysql-connector-python",
     "mpi4py"
 ]
