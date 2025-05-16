@@ -1,5 +1,9 @@
 # Ignore venv
 pnws_env
+# Ignore specific scripts
+scripts/mpi_index_mseed_bakerlocal.py
+scripts/mpi_index_mseed_cmd.py
+scripts/mpi_index_mseed_thewall_pnws.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

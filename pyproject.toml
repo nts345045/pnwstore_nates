@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "msiclient"
+version = "0.0.1"
+authors = [{name="Nathan T. Stevens", email="ntsteven@uw.edu"}]
+requires-python = ">=3.9"
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: MIT :: MIT License",
+    "Operating System :: TBD",
+    "Development Status :: 3 - Alpha"
+]
+dependencies = [
+    "obspy",
+    "pandas",
+    "sqlite3",
+    "mysql-connector-python",
+    "mpi4py"
+]
+
+[tool.setuptools.packages.find]
+include = ["msiclient*"]
+
+[project.urls]
+GitHub = "https://github.com/nts345045/pnwstore_nates"
