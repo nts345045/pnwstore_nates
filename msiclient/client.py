@@ -235,17 +235,8 @@ class WaveformClient(object):
                 fn = False
 
             for _b in bulk:
-                net, sta, loc, cha, st, et = _b
                 try:
-                    _st = self.get_waveforms(
-                        network=net,
-                        station=sta,
-                        location=loc,
-                        channel=cha,
-                        starttime=st,
-                        endtime=et,
-                        **kwargs
-                    )
+                    _st = self.get_waveforms(*_b, **kwargs)
                     st += _st
                 except Exception as e:
                     warnings.warn(f'failed to run request {_b}: {e}')
