@@ -10,6 +10,7 @@ Modified by Nathan T. Stevens (2025)
 
 """
 import sqlite3, io, obspy, os, warnings
+from pathlib import Path
 import pandas as pd
 
 
@@ -60,13 +61,17 @@ class WaveformClient(object):
     :param sqlite: path and database name for the sqlite3 database to query
     :type sqlite: str
     """
-    def __init__(self, sqlite):
+    def __init__(self, sqlite, basepath=None):
         """Initialize a WaveformClient object
 
         :param sqlite: path and database name for the sqlite3 database to query
         :type sqlite: str
         """        
         self._db = sqlite3.connect(sqlite)
+        if basepath is None:
+            self._basepath = Path(os.path.split(sqlite)[0])
+        elif isinstance(basepath, (str, Path)):
+            self._basepath = Path(basepath)
         self._cursor = self._db.cursor()
         self._keys = mseedkeys
 
@@ -177,13 +182,15 @@ class WaveformClient(object):
 
         for _r in rst:
             byteoffset, byte, seedfile = _r
+            seedfile = self._basepath / Path(seedfile)
             with open(seedfile, 'rb') as f:
                 f.seek(byteoffset)
                 buff = io.BytesIO(f.read(byte))
                 try:
                     st += obspy.read(buff,starttime=starttime, endtime=endtime)
                 except:
-                    breakpoint()
+                    warnings.warn(f'failed to load buffer for {seedfile} - skipping')
+                    continue
 
         if minimumlength is None:
             pass
