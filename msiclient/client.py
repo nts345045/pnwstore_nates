@@ -12,6 +12,7 @@ Modified by Nathan T. Stevens (2025)
 import sqlite3, io, obspy, os, warnings
 from pathlib import Path
 import pandas as pd
+from obspy.clients.fdsn import Client
 
 
 mseedkeys = [
@@ -61,7 +62,7 @@ class WaveformClient(object):
     :param sqlite: path and database name for the sqlite3 database to query
     :type sqlite: str
     """
-    def __init__(self, sqlite, basepath=None):
+    def __init__(self, sqlite, basepath=None, backup_webservice='IRIS'):
         """Initialize a WaveformClient object
 
         :param sqlite: path and database name for the sqlite3 database to query
@@ -74,6 +75,7 @@ class WaveformClient(object):
             self._basepath = Path(basepath)
         self._cursor = self._db.cursor()
         self._keys = mseedkeys
+        self._webclient = Client(backup_webservice)
 
 
     def get_waveforms(self, network, station, location, channel, starttime, endtime,
@@ -182,15 +184,23 @@ class WaveformClient(object):
 
         for _r in rst:
             byteoffset, byte, seedfile = _r
+            if '/' == seedfile[0] or '\\' == seedfile[0]:
+                seedfile = seedfile[1:]
             seedfile = self._basepath / Path(seedfile)
+            try_direct_read = False
             with open(seedfile, 'rb') as f:
                 f.seek(byteoffset)
                 buff = io.BytesIO(f.read(byte))
                 try:
                     st += obspy.read(buff,starttime=starttime, endtime=endtime)
                 except:
-                    warnings.warn(f'failed to load buffer for {seedfile} - skipping')
-                    continue
+                    warnings.warn(f'failed to load buffer for {seedfile} - trying non-byte-indexed')
+                    try_direct_read = True
+            if try_direct_read:
+                try:
+                    st += obspy.read(seedfile, starttime=starttime, endtime=endtime)
+                except:
+                    warnings.warn(f'failed to load {seedfile} with osbspy.read - skipping')
 
         if minimumlength is None:
             pass
